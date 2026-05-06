@@ -41,9 +41,13 @@ export default function AbaAgenda({ barbeiro }) {
       .order("data_hora", { ascending: true });
 
     const trintaMinAtras = new Date(Date.now() - 30 * 60 * 1000);
-    const filtrados = (data || []).filter(
-      (ag) => new Date(ag.data_hora) > trintaMinAtras
-    );
+    const filtrados = (data || []).filter((ag) => {
+      // Compara como horário local (sem conversão UTC)
+      const [datePart, timePart] = ag.data_hora.split("T");
+      const [y, mo, d] = datePart.split("-").map(Number);
+      const [h, mi] = timePart.split(":").map(Number);
+      return new Date(y, mo - 1, d, h, mi) > trintaMinAtras;
+    });
     setAgendamentos(filtrados);
     setCarregando(false);
   }
