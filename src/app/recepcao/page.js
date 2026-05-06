@@ -24,7 +24,7 @@ export default function RecepcaoPage() {
       const { data: recep } = await supabase
         .from("recepcionistas")
         .select("*")
-        .eq("email", user.email)
+        .eq("email", user.email.toLowerCase().trim())
         .single();
 
       if (!recep) { router.push("/dashboard"); return; }

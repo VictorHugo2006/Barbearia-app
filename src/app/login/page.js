@@ -27,11 +27,11 @@ export default function LoginPage() {
       return;
     }
 
-    // Verifica se é recepcionista
+    // Verifica se é recepcionista (compara em minúsculas)
     const { data: recep } = await supabase
       .from("recepcionistas")
       .select("id")
-      .eq("email", email)
+      .eq("email", email.toLowerCase().trim())
       .single();
 
     if (recep) {
