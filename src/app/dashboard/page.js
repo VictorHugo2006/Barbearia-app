@@ -296,17 +296,16 @@ export default function DashboardPage() {
 
       <div className="dash-root">
         <header className="topbar">
-          <img
-            src="/logo.png"
-            alt="Dom Navalha"
-            className="topbar-logo"
-            onError={(e) => {
-              e.target.style.display = "none";
-              e.target.nextSibling.style.display = "block";
-            }}
-          />
-          <div className="topbar-brand-text" style={{ display: "none" }}>
-            Dom <span>Navalha</span>
+          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+            <img
+              src="/logo.png"
+              alt="Dom Navalha"
+              className="topbar-logo"
+              onError={(e) => { e.target.style.display = "none"; }}
+            />
+            <div className="topbar-brand-text">
+              Dom <span>Navalha</span>
+            </div>
           </div>
           <div className="topbar-user">
             <span className="topbar-nome">{barbeiro.nome}</span>
