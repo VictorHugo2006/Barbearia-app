@@ -36,9 +36,9 @@ export async function proxy(request) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Já logado não precisa ver o login
+  // Já logado não precisa ver o login — mas não sabemos o role aqui, deixa o login.js redirecionar
   if (user && path === "/login") {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return response;
   }
 
   return response;
