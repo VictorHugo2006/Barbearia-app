@@ -23,7 +23,19 @@ export default function LoginPage() {
       setLoading(false);
       return;
     }
-    router.push("/dashboard");
+
+    // Verifica se é recepcionista
+    const { data: recep } = await supabase
+      .from("recepcionistas")
+      .select("id")
+      .eq("email", email)
+      .single();
+
+    if (recep) {
+      router.push("/recepcao");
+    } else {
+      router.push("/dashboard");
+    }
   }
 
   return (
