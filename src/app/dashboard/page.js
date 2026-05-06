@@ -30,6 +30,13 @@ export default function DashboardPage() {
         .eq("email", user.email)
         .single();
 
+      if (!data) {
+        // Não é barbeiro — redireciona para login
+        await supabase.auth.signOut();
+        router.push("/login");
+        return;
+      }
+
       setBarbeiro(data);
 
       if (data) {

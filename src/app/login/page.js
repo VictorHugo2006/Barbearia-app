@@ -9,6 +9,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(false);
+  const [shake, setShake] = useState(false);
   const router = useRouter();
 
   async function handleLogin() {
@@ -21,6 +22,8 @@ export default function LoginPage() {
     if (error) {
       setErro("Email ou senha incorretos");
       setLoading(false);
+      setShake(true);
+      setTimeout(() => setShake(false), 600);
       return;
     }
 
@@ -90,6 +93,23 @@ export default function LoginPage() {
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(24px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shake {
+          0%   { transform: translateX(0); }
+          15%  { transform: translateX(-10px); }
+          30%  { transform: translateX(10px); }
+          45%  { transform: translateX(-8px); }
+          60%  { transform: translateX(8px); }
+          75%  { transform: translateX(-4px); }
+          90%  { transform: translateX(4px); }
+          100% { transform: translateX(0); }
+        }
+
+        .card.shake {
+          animation: shake 0.55s ease forwards;
+          border-color: rgba(192, 57, 43, 0.7);
+          box-shadow: 0 0 80px rgba(0,0,0,0.8), 0 0 24px rgba(192,57,43,0.2), inset 0 1px 0 rgba(192,57,43,0.15);
         }
 
         .corner {
@@ -245,7 +265,7 @@ export default function LoginPage() {
         <div className="bg-texture" />
         <div className="bg-lines" />
 
-        <div className="card">
+        <div className={`card ${shake ? "shake" : ""}`}>
           <div className="corner corner-tl" />
           <div className="corner corner-tr" />
           <div className="corner corner-bl" />
