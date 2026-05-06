@@ -108,6 +108,16 @@ export default function AbaBloqueios({ barbeiro }) {
   const ehHoje = (dia) =>
     dia === hoje.getDate() && mes === hoje.getMonth() && ano === hoje.getFullYear();
 
+  const todosBloqueados = HORARIOS.every((h) => bloqueios.includes(h));
+
+  function toggleDiaTodo() {
+    if (todosBloqueados) {
+      setBloqueios([]);
+    } else {
+      setBloqueios([...HORARIOS]);
+    }
+  }
+
   return (
     <>
       <style>{`
@@ -273,6 +283,26 @@ export default function AbaBloqueios({ barbeiro }) {
         .legenda-cor { width: 12px; height: 12px; border: 1px solid; flex-shrink: 0; }
         .legenda-livre { border-color: rgba(26,18,9,0.2); }
         .legenda-bloqueado { border-color: rgba(192,57,43,0.5); background: rgba(192,57,43,0.1); }
+        .btn-bloquear-tudo {
+          width: 100%;
+          padding: 11px;
+          background: none;
+          border: 1px solid rgba(192,57,43,0.5);
+          color: #c0392b;
+          cursor: pointer;
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 12px;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          transition: all 0.2s;
+          margin-bottom: 12px;
+        }
+        .btn-bloquear-tudo:hover { background: rgba(192,57,43,0.07); }
+        .btn-bloquear-tudo.todos-bloqueados {
+          border-color: rgba(26,18,9,0.3);
+          color: rgba(26,18,9,0.5);
+        }
+        .btn-bloquear-tudo.todos-bloqueados:hover { background: rgba(26,18,9,0.05); }
 
         /* ── MOBILE ── */
         @media (max-width: 600px) {
@@ -345,6 +375,13 @@ export default function AbaBloqueios({ barbeiro }) {
               <div className="ag-panel-title">{diaSelecionado} de {meses[mes]}</div>
               <div className="ag-panel-sub">Clique nos horários para bloquear ou desbloquear</div>
               <div className="ag-panel-divider" />
+
+              <button
+                className={`btn-bloquear-tudo ${todosBloqueados ? "todos-bloqueados" : ""}`}
+                onClick={toggleDiaTodo}
+              >
+                {todosBloqueados ? "✓ Dia todo bloqueado — clique para desbloquear" : "Bloquear dia todo"}
+              </button>
 
               <div className="legenda">
                 <div className="legenda-item">
