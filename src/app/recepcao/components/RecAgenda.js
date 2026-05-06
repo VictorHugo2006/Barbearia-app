@@ -34,6 +34,9 @@ export default function RecAgenda({ barbeiros }) {
       <p className="page-subtitle">Selecione o profissional</p>
       <div className="divider" />
 
+      {barbeiros.length === 0 && (
+        <div className="empty-state">Nenhum profissional encontrado</div>
+      )}
       <div className="rec-prof-selector">
         {barbeiros.map((b) => (
           <button
