@@ -154,6 +154,7 @@ export default function DashboardPage() {
           letter-spacing: 2px;
           text-transform: uppercase;
           transition: all 0.2s;
+          white-space: nowrap;
         }
 
         .btn-sair:hover {
@@ -165,7 +166,12 @@ export default function DashboardPage() {
           border-bottom: 2px solid rgba(26,18,9,0.15);
           padding: 0 32px;
           background: #e8d9cb;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
         }
+
+        .navbar::-webkit-scrollbar { display: none; }
 
         .nav-item {
           display: flex;
@@ -185,6 +191,8 @@ export default function DashboardPage() {
           border-left: none;
           border-right: none;
           font-family: 'Cormorant Garamond', serif;
+          white-space: nowrap;
+          flex-shrink: 0;
         }
 
         .nav-item:hover { color: #1a1209; }
@@ -291,6 +299,75 @@ export default function DashboardPage() {
           font-family: 'Playfair Display', serif;
           font-size: 20px;
           letter-spacing: 4px;
+        }
+
+        /* ── MOBILE ── */
+        @media (max-width: 600px) {
+          .topbar {
+            padding: 10px 16px;
+          }
+
+          .topbar-logo {
+            height: 44px;
+          }
+
+          .topbar-brand-text {
+            font-size: 15px;
+            letter-spacing: 3px;
+          }
+
+          .topbar-nome {
+            display: none;
+          }
+
+          .navbar {
+            padding: 0 8px;
+          }
+
+          .nav-item {
+            padding: 12px 14px;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            gap: 5px;
+          }
+
+          .content {
+            padding: 24px 16px;
+          }
+
+          .page-title {
+            font-size: 22px;
+          }
+
+          .page-subtitle {
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            margin-bottom: 20px;
+          }
+
+          .card-agendamento {
+            padding: 14px 16px;
+            gap: 14px;
+          }
+
+          .hora {
+            font-size: 18px;
+            min-width: 54px;
+          }
+
+          .ag-nome {
+            font-size: 15px;
+          }
+
+          .ag-servico {
+            font-size: 11px;
+          }
+
+          .ag-status {
+            font-size: 10px;
+            letter-spacing: 1px;
+            padding: 3px 8px;
+          }
         }
       `}</style>
 

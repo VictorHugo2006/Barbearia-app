@@ -270,9 +270,40 @@ export default function AbaBloqueios({ barbeiro }) {
           letter-spacing: 1px;
           color: rgba(26,18,9,0.5);
         }
-        .legenda-cor { width: 12px; height: 12px; border: 1px solid; }
+        .legenda-cor { width: 12px; height: 12px; border: 1px solid; flex-shrink: 0; }
         .legenda-livre { border-color: rgba(26,18,9,0.2); }
         .legenda-bloqueado { border-color: rgba(192,57,43,0.5); background: rgba(192,57,43,0.1); }
+
+        /* ── MOBILE ── */
+        @media (max-width: 600px) {
+          .bloqueios-grid {
+            grid-template-columns: 1fr;
+            gap: 24px;
+          }
+          .cal-mes {
+            font-size: 14px;
+            letter-spacing: 2px;
+          }
+          .cal-dia {
+            font-size: 13px;
+          }
+          .cal-semana span {
+            font-size: 9px;
+            letter-spacing: 0;
+          }
+          .ag-panel {
+            padding: 20px 16px;
+            min-height: unset;
+          }
+          .horarios-grid {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+          }
+          .horario-btn {
+            padding: 12px 2px;
+            font-size: 13px;
+          }
+        }
       `}</style>
 
       <h1 className="page-title">Bloqueios</h1>

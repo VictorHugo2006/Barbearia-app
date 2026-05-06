@@ -66,9 +66,6 @@ export default function AbaAgenda({ barbeiro }) {
           gap: 32px;
           align-items: start;
         }
-        @media (max-width: 700px) {
-          .agenda-grid { grid-template-columns: 1fr; }
-        }
         .cal-header {
           display: flex;
           align-items: center;
@@ -162,6 +159,29 @@ export default function AbaAgenda({ barbeiro }) {
           height: 1px;
           background: linear-gradient(to right, rgba(26,18,9,0.2), transparent);
           margin-bottom: 20px;
+        }
+
+        /* ── MOBILE ── */
+        @media (max-width: 600px) {
+          .agenda-grid {
+            grid-template-columns: 1fr;
+            gap: 24px;
+          }
+          .cal-mes {
+            font-size: 15px;
+            letter-spacing: 1px;
+          }
+          .cal-semana span {
+            font-size: 9px;
+            letter-spacing: 0;
+          }
+          .cal-dia {
+            font-size: 13px;
+          }
+          .ag-panel {
+            padding: 20px 16px;
+            min-height: unset;
+          }
         }
       `}</style>
 
