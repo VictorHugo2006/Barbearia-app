@@ -40,7 +40,11 @@ export default function AbaAgenda({ barbeiro }) {
       .lt("data_hora", `${dataStr}T23:59:59`)
       .order("data_hora", { ascending: true });
 
-    setAgendamentos(data || []);
+    const trintaMinAtras = new Date(Date.now() - 30 * 60 * 1000);
+    const filtrados = (data || []).filter(
+      (ag) => new Date(ag.data_hora) > trintaMinAtras
+    );
+    setAgendamentos(filtrados);
     setCarregando(false);
   }
 

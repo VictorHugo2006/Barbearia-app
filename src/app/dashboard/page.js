@@ -33,11 +33,10 @@ export default function DashboardPage() {
 
       if (data) {
         const hoje = new Date();
-        const inicio = new Date(
-          hoje.getFullYear(),
-          hoje.getMonth(),
-          hoje.getDate(),
-        ).toISOString();
+        const inicioHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+        const trintaMinAtras = new Date(hoje.getTime() - 30 * 60 * 1000);
+        // Usa o maior entre início do dia e 30 min atrás
+        const inicio = (trintaMinAtras > inicioHoje ? trintaMinAtras : inicioHoje).toISOString();
         const fim = new Date(
           hoje.getFullYear(),
           hoje.getMonth(),
