@@ -21,19 +21,29 @@ export default function RecepcaoPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/login"); return; }
 
-      const { data: recep } = await supabase
+      const { data: recep, error: errRecep } = await supabase
         .from("recepcionistas")
         .select("*")
         .eq("email", user.email.toLowerCase().trim())
         .single();
 
-      if (!recep) { router.push("/dashboard"); return; }
+      console.log("[recepcao] user.email:", user.email);
+      console.log("[recepcao] recep:", recep, "erro:", errRecep);
+
+      if (!recep) {
+        // Não é recepcionista — tenta dashboard
+        await supabase.auth.signOut();
+        router.push("/login");
+        return;
+      }
       setRecepcionista(recep);
 
-      const { data: barbs } = await supabase
+      const { data: barbs, error: errBarbs } = await supabase
         .from("barbeiros")
         .select("*")
         .order("nome");
+
+      console.log("[recepcao] barbeiros:", barbs, "erro:", errBarbs);
 
       setBarbeiros(barbs || []);
       if (barbs && barbs.length > 0) setBarbeiroSelecionado(barbs[0]);
@@ -46,7 +56,7 @@ export default function RecepcaoPage() {
     router.push("/login");
   }
 
-  if (!recepcionista || barbeiros.length === 0)
+  if (!recepcionista)
     return (
       <div style={{
         minHeight: "100vh", background: "#0a0a0a", display: "flex",
