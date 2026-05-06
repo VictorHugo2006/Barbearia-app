@@ -119,6 +119,18 @@ export default function DashboardPage() {
           display: block;
         }
 
+        .topbar-brand-text {
+          font-family: 'Playfair Display', serif;
+          font-size: 22px;
+          letter-spacing: 5px;
+          color: #1a1209;
+          text-transform: uppercase;
+        }
+
+        .topbar-brand-text span {
+          color: #7a5920;
+        }
+
         .topbar-user {
           display: flex;
           align-items: center;
@@ -284,7 +296,18 @@ export default function DashboardPage() {
 
       <div className="dash-root">
         <header className="topbar">
-          <img src="/logo.png" alt="Dom Navalha" className="topbar-logo" />
+          <img
+            src="/logo.png"
+            alt="Dom Navalha"
+            className="topbar-logo"
+            onError={(e) => {
+              e.target.style.display = "none";
+              e.target.nextSibling.style.display = "block";
+            }}
+          />
+          <div className="topbar-brand-text" style={{ display: "none" }}>
+            Dom <span>Navalha</span>
+          </div>
           <div className="topbar-user">
             <span className="topbar-nome">{barbeiro.nome}</span>
             <button className="btn-sair" onClick={handleLogout}>
