@@ -4,61 +4,63 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 export default function RecHoje({ barbeiros }) {
-  const [agPorBarbeiro, setAgPorBarbeiro] = useState({});
+  const [todos, setTodos] = useState([]);
   const [carregando, setCarregando] = useState(true);
-  const [barbeiroAtivo, setBarbeiroAtivo] = useState(barbeiros[0]?.nome || "");
+  const [filtroProfissional, setFiltroProfissional] = useState("todos");
+  const [filtroTurno, setFiltroTurno] = useState("todos");
 
   useEffect(() => {
     async function carregar() {
-      const agora = new Date();
-      const trintaMinAtras = new Date(agora.getTime() - 30 * 60 * 1000);
-
-      function toLocalStr(d) {
-        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}T${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}:00`;
-      }
-
-      const inicio = toLocalStr(trintaMinAtras);
-      const fim = `${agora.getFullYear()}-${String(agora.getMonth()+1).padStart(2,"0")}-${String(agora.getDate()).padStart(2,"0")}T23:59:59`;
+      const hoje = new Date();
+      const dataStr = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,"0")}-${String(hoje.getDate()).padStart(2,"0")}`;
 
       const { data } = await supabase
         .from("agendamentos")
         .select("*")
-        .gte("data_hora", inicio)
-        .lte("data_hora", fim)
+        .gte("data_hora", `${dataStr}T00:00:00`)
+        .lte("data_hora", `${dataStr}T23:59:59`)
         .order("data_hora", { ascending: true });
 
-      const mapa = {};
-      barbeiros.forEach((b) => { mapa[b.nome] = []; });
-      (data || []).forEach((ag) => {
-        if (mapa[ag.barbeiro] !== undefined) mapa[ag.barbeiro].push(ag);
-      });
-
-      setAgPorBarbeiro(mapa);
+      setTodos(data || []);
       setCarregando(false);
     }
     carregar();
   }, []);
 
-  const total = Object.values(agPorBarbeiro).flat().length;
+  // Filtros
+  const filtrados = todos.filter((ag) => {
+    const hora = parseInt(ag.data_hora.slice(11, 13));
+    const profOk = filtroProfissional === "todos" || ag.barbeiro === filtroProfissional;
+    const turnoOk =
+      filtroTurno === "todos" ||
+      (filtroTurno === "manha" && hora < 12) ||
+      (filtroTurno === "tarde" && hora >= 12);
+    return profOk && turnoOk;
+  });
+
+  const totalPorBarbeiro = barbeiros.reduce((acc, b) => {
+    acc[b.nome] = todos.filter((ag) => ag.barbeiro === b.nome).length;
+    return acc;
+  }, {});
 
   return (
     <>
       <style>{`
-        .rec-hoje-stats {
+        .rec-stats {
           display: flex;
-          gap: 16px;
+          gap: 12px;
           margin-bottom: 28px;
           flex-wrap: wrap;
         }
         .rec-stat {
           border: 1px solid rgba(26,18,9,0.15);
           background: rgba(255,255,255,0.5);
-          padding: 16px 24px;
-          min-width: 140px;
+          padding: 14px 20px;
+          min-width: 120px;
         }
         .rec-stat-num {
           font-family: 'Playfair Display', serif;
-          font-size: 32px;
+          font-size: 28px;
           color: #1a1209;
           line-height: 1;
           margin-bottom: 4px;
@@ -69,46 +71,49 @@ export default function RecHoje({ barbeiros }) {
           text-transform: uppercase;
           color: rgba(26,18,9,0.45);
         }
-        .rec-barbeiro-tabs {
+        .rec-filtros {
+          display: flex;
+          gap: 24px;
+          margin-bottom: 24px;
+          flex-wrap: wrap;
+          align-items: center;
+        }
+        .rec-filtro-grupo {
           display: flex;
           gap: 0;
-          margin-bottom: 24px;
-          border-bottom: 2px solid rgba(26,18,9,0.1);
-          overflow-x: auto;
-          scrollbar-width: none;
+          border: 1px solid rgba(26,18,9,0.2);
+          overflow: hidden;
         }
-        .rec-barbeiro-tabs::-webkit-scrollbar { display: none; }
-        .rec-barbeiro-tab {
-          padding: 10px 24px;
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 13px;
+        .rec-filtro-label {
+          font-size: 10px;
           letter-spacing: 2px;
           text-transform: uppercase;
           color: rgba(26,18,9,0.45);
+          align-self: center;
+          margin-right: 8px;
+        }
+        .rec-filtro-btn {
+          padding: 7px 16px;
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 13px;
+          letter-spacing: 1px;
           border: none;
-          border-bottom: 2px solid transparent;
-          margin-bottom: -2px;
+          border-right: 1px solid rgba(26,18,9,0.15);
           background: none;
+          color: rgba(26,18,9,0.5);
           cursor: pointer;
+          transition: all 0.15s;
           white-space: nowrap;
-          transition: all 0.2s;
         }
-        .rec-barbeiro-tab.ativo {
-          color: #1a1209;
-          border-bottom-color: #1a1209;
-          font-weight: 600;
-        }
-        .rec-barbeiro-tab .badge {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 18px;
-          height: 18px;
-          background: #1a1209;
-          color: #f5ede3;
+        .rec-filtro-btn:last-child { border-right: none; }
+        .rec-filtro-btn:hover { background: rgba(26,18,9,0.05); color: #1a1209; }
+        .rec-filtro-btn.ativo { background: #1a1209; color: #f5ede3; }
+        .rec-ag-barbeiro {
           font-size: 10px;
-          border-radius: 50%;
-          margin-left: 6px;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          color: rgba(26,18,9,0.4);
+          margin-bottom: 2px;
         }
       `}</style>
 
@@ -119,44 +124,58 @@ export default function RecHoje({ barbeiros }) {
       <div className="divider" />
 
       {/* Estatísticas */}
-      <div className="rec-hoje-stats">
+      <div className="rec-stats">
         <div className="rec-stat">
-          <div className="rec-stat-num">{total}</div>
-          <div className="rec-stat-label">Agendamentos</div>
+          <div className="rec-stat-num">{todos.length}</div>
+          <div className="rec-stat-label">Total</div>
         </div>
         {barbeiros.map((b) => (
           <div key={b.nome} className="rec-stat">
-            <div className="rec-stat-num">{(agPorBarbeiro[b.nome] || []).length}</div>
+            <div className="rec-stat-num">{totalPorBarbeiro[b.nome] || 0}</div>
             <div className="rec-stat-label">{b.nome}</div>
           </div>
         ))}
       </div>
 
-      {/* Tabs por barbeiro */}
-      <div className="rec-barbeiro-tabs">
-        {barbeiros.map((b) => (
-          <button
-            key={b.nome}
-            className={`rec-barbeiro-tab ${barbeiroAtivo === b.nome ? "ativo" : ""}`}
-            onClick={() => setBarbeiroAtivo(b.nome)}
-          >
-            {b.nome}
-            {(agPorBarbeiro[b.nome] || []).length > 0 && (
-              <span className="badge">{(agPorBarbeiro[b.nome] || []).length}</span>
-            )}
-          </button>
-        ))}
+      {/* Filtros */}
+      <div className="rec-filtros">
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span className="rec-filtro-label">Profissional</span>
+          <div className="rec-filtro-grupo">
+            <button
+              className={`rec-filtro-btn ${filtroProfissional === "todos" ? "ativo" : ""}`}
+              onClick={() => setFiltroProfissional("todos")}
+            >Todos</button>
+            {barbeiros.map((b) => (
+              <button
+                key={b.nome}
+                className={`rec-filtro-btn ${filtroProfissional === b.nome ? "ativo" : ""}`}
+                onClick={() => setFiltroProfissional(b.nome)}
+              >{b.nome}</button>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span className="rec-filtro-label">Turno</span>
+          <div className="rec-filtro-grupo">
+            <button className={`rec-filtro-btn ${filtroTurno === "todos" ? "ativo" : ""}`} onClick={() => setFiltroTurno("todos")}>Todos</button>
+            <button className={`rec-filtro-btn ${filtroTurno === "manha" ? "ativo" : ""}`} onClick={() => setFiltroTurno("manha")}>Manhã</button>
+            <button className={`rec-filtro-btn ${filtroTurno === "tarde" ? "ativo" : ""}`} onClick={() => setFiltroTurno("tarde")}>Tarde</button>
+          </div>
+        </div>
       </div>
 
       {carregando ? (
         <div className="empty-state">Carregando...</div>
-      ) : (agPorBarbeiro[barbeiroAtivo] || []).length === 0 ? (
-        <div className="empty-state">Nenhum agendamento para hoje</div>
+      ) : filtrados.length === 0 ? (
+        <div className="empty-state">Nenhum agendamento encontrado</div>
       ) : (
-        (agPorBarbeiro[barbeiroAtivo] || []).map((ag) => (
+        filtrados.map((ag) => (
           <div key={ag.id} className="card-agendamento">
             <div className="hora">{ag.data_hora.slice(11, 16)}</div>
             <div className="ag-info">
+              <div className="rec-ag-barbeiro">{ag.barbeiro}</div>
               <div className="ag-nome">{ag.nome_cliente}</div>
               <div className="ag-servico">{ag.servico}</div>
             </div>

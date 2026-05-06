@@ -5,14 +5,13 @@ import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import RecHoje from "./components/RecHoje";
 import RecNovoAgendamento from "./components/RecNovoAgendamento";
+import RecAgenda from "./components/RecAgenda";
+import RecBloqueios from "./components/RecBloqueios";
 import RecGerenciar from "./components/RecGerenciar";
-import AbaAgenda from "../dashboard/components/AbaAgenda";
-import AbaBloqueios from "../dashboard/components/AbaBloqueios";
 
 export default function RecepcaoPage() {
   const [recepcionista, setRecepcionista] = useState(null);
   const [barbeiros, setBarbeiros] = useState([]);
-  const [barbeiroSelecionado, setBarbeiroSelecionado] = useState(null);
   const [abaAtiva, setAbaAtiva] = useState("hoje");
   const router = useRouter();
 
@@ -46,7 +45,6 @@ export default function RecepcaoPage() {
       console.log("[recepcao] barbeiros:", barbs, "erro:", errBarbs);
 
       setBarbeiros(barbs || []);
-      if (barbs && barbs.length > 0) setBarbeiroSelecionado(barbs[0]);
     }
     carregar();
   }, []);
@@ -74,9 +72,6 @@ export default function RecepcaoPage() {
     { id: "bloqueios", label: "Bloqueios", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> },
     { id: "gerenciar", label: "Gerenciar", icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> },
   ];
-
-  // Abas que precisam selecionar barbeiro
-  const precisaBarbeiro = abaAtiva === "agenda" || abaAtiva === "bloqueios";
 
   return (
     <>
@@ -170,33 +165,11 @@ export default function RecepcaoPage() {
           ))}
         </nav>
 
-        {/* Seletor de barbeiro para Agenda e Bloqueios */}
-        {precisaBarbeiro && (
-          <div className="barbeiro-selector">
-            <span className="barbeiro-selector-label">Profissional:</span>
-            <div className="barbeiro-selector-btns">
-              {barbeiros.map((b) => (
-                <button
-                  key={b.id}
-                  className={`barbeiro-btn ${barbeiroSelecionado?.id === b.id ? "ativo" : ""}`}
-                  onClick={() => setBarbeiroSelecionado(b)}
-                >
-                  {b.nome}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
         <main className="content">
           {abaAtiva === "hoje" && <RecHoje barbeiros={barbeiros} />}
           {abaAtiva === "novo" && <RecNovoAgendamento barbeiros={barbeiros} />}
-          {abaAtiva === "agenda" && barbeiroSelecionado && (
-            <AbaAgenda key={barbeiroSelecionado.id} barbeiro={barbeiroSelecionado} />
-          )}
-          {abaAtiva === "bloqueios" && barbeiroSelecionado && (
-            <AbaBloqueios key={barbeiroSelecionado.id} barbeiro={barbeiroSelecionado} />
-          )}
+          {abaAtiva === "agenda" && <RecAgenda barbeiros={barbeiros} />}
+          {abaAtiva === "bloqueios" && <RecBloqueios barbeiros={barbeiros} />}
           {abaAtiva === "gerenciar" && <RecGerenciar barbeiros={barbeiros} />}
         </main>
       </div>
