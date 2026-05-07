@@ -190,6 +190,7 @@ export default function AgendarPage() {
 
         {/* Header */}
         <header className="ag-header">
+          <a href="/" className="ag-voltar">← Voltar</a>
           <img src="/logo.png" alt="Dom Navalha" className="ag-logo"
             onError={(e) => { e.target.style.display="none"; }} />
           <div className="ag-brand">Dom <span>Navalha</span></div>
@@ -449,6 +450,16 @@ const css = `
     z-index: 10;
   }
   .ag-logo { height: 52px; width: auto; object-fit: contain; }
+  .ag-voltar {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: rgba(26,18,9,0.45);
+    text-decoration: none;
+    transition: color 0.15s;
+    white-space: nowrap;
+  }
+  .ag-voltar:hover { color: #1a1209; }
   .ag-brand {
     font-family: 'Playfair Display', serif;
     font-size: 18px;
