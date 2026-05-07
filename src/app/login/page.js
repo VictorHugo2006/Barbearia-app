@@ -15,10 +15,7 @@ export default function LoginPage() {
   async function handleLogin() {
     setLoading(true);
     setErro("");
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setErro("Email ou senha incorretos");
       setLoading(false);
@@ -27,7 +24,6 @@ export default function LoginPage() {
       return;
     }
 
-    // Verifica se é recepcionista (compara em minúsculas)
     const { data: recep } = await supabase
       .from("recepcionistas")
       .select("id")
@@ -45,54 +41,30 @@ export default function LoginPage() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap');
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         .login-root {
           min-height: 100vh;
-          background-color: #0a0a0a;
+          background: #f5ede3;
           display: flex;
           align-items: center;
           justify-content: center;
-          position: relative;
-          overflow: hidden;
           font-family: 'Cormorant Garamond', serif;
-        }
-
-        .bg-texture {
-          position: absolute;
-          inset: 0;
-          background-image: 
-            radial-gradient(ellipse at 20% 50%, rgba(180, 140, 60, 0.06) 0%, transparent 60%),
-            radial-gradient(ellipse at 80% 20%, rgba(180, 140, 60, 0.04) 0%, transparent 50%);
-        }
-
-        .bg-lines {
-          position: absolute;
-          inset: 0;
-          background-image: repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 60px,
-            rgba(180, 140, 60, 0.03) 60px,
-            rgba(180, 140, 60, 0.03) 61px
-          );
+          padding: 24px 16px;
         }
 
         .card {
-          position: relative;
-          z-index: 10;
-          width: 420px;
-          padding: 56px 48px;
-          border: 1px solid rgba(180, 140, 60, 0.25);
-          background: rgba(15, 13, 10, 0.95);
-          box-shadow: 0 0 80px rgba(0,0,0,0.8), inset 0 1px 0 rgba(180,140,60,0.1);
-          animation: fadeUp 0.8s ease forwards;
+          width: 100%;
+          max-width: 400px;
+          background: rgba(255,255,255,0.6);
+          border: 1px solid rgba(26,18,9,0.15);
+          padding: 48px 40px;
+          animation: fadeUp 0.6s ease forwards;
         }
 
         @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(24px); }
-          to { opacity: 1; transform: translateY(0); }
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes shake {
@@ -108,82 +80,61 @@ export default function LoginPage() {
 
         .card.shake {
           animation: shake 0.55s ease forwards;
-          border-color: rgba(192, 57, 43, 0.7);
-          box-shadow: 0 0 80px rgba(0,0,0,0.8), 0 0 24px rgba(192,57,43,0.2), inset 0 1px 0 rgba(192,57,43,0.15);
+          border-color: rgba(192,57,43,0.5);
         }
 
-        .corner {
-          position: absolute;
-          width: 16px;
-          height: 16px;
-          border-color: #b48c3c;
-          border-style: solid;
-        }
-        .corner-tl { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
-        .corner-tr { top: -1px; right: -1px; border-width: 2px 2px 0 0; }
-        .corner-bl { bottom: -1px; left: -1px; border-width: 0 0 2px 2px; }
-        .corner-br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
-
-        .logo-area {
-          text-align: center;
-          margin-bottom: 40px;
-        }
-
-        .logo-divider {
+        /* Logo */
+        .login-logo-wrap {
           display: flex;
+          flex-direction: column;
           align-items: center;
+          margin-bottom: 36px;
           gap: 12px;
-          margin-bottom: 20px;
         }
 
-        .logo-divider::before,
-        .logo-divider::after {
-          content: '';
-          flex: 1;
+        .login-logo {
+          height: 100px;
+          width: auto;
+          object-fit: contain;
+        }
+
+        .login-divider {
+          width: 100%;
           height: 1px;
-          background: linear-gradient(to right, transparent, rgba(180,140,60,0.5));
+          background: linear-gradient(to right, transparent, rgba(26,18,9,0.2), transparent);
         }
 
-        .logo-divider::after {
-          background: linear-gradient(to left, transparent, rgba(180,140,60,0.5));
-        }
-
-        .logo-diamond {
-          width: 6px;
-          height: 6px;
-          background: #b48c3c;
-          transform: rotate(45deg);
-        }
-
-        .brand-name {
+        .login-brand {
           font-family: 'Playfair Display', serif;
-          font-size: 28px;
-          font-weight: 700;
-          color: #f0e6cc;
-          letter-spacing: 4px;
+          font-size: 22px;
+          letter-spacing: 6px;
+          color: #1a1209;
           text-transform: uppercase;
         }
 
-        .brand-sub {
+        .login-brand span { color: #7a5920; }
+
+        .login-sub {
           font-family: 'Cormorant Garamond', serif;
           font-style: italic;
-          font-size: 14px;
-          color: #b48c3c;
+          font-size: 13px;
           letter-spacing: 3px;
-          margin-top: 4px;
+          color: rgba(26,18,9,0.45);
         }
 
-        .section-label {
+        /* Label de acesso */
+        .login-acesso {
           font-size: 10px;
           letter-spacing: 3px;
           text-transform: uppercase;
-          color: rgba(180,140,60,0.6);
-          margin-bottom: 24px;
+          color: rgba(26,18,9,0.4);
           text-align: center;
+          margin-bottom: 28px;
         }
 
+        /* Campos */
         .field {
-          margin-bottom: 20px;
+          margin-bottom: 18px;
         }
 
         .field label {
@@ -191,101 +142,91 @@ export default function LoginPage() {
           font-size: 10px;
           letter-spacing: 2px;
           text-transform: uppercase;
-          color: rgba(180,140,60,0.7);
+          color: rgba(26,18,9,0.5);
           margin-bottom: 8px;
         }
 
         .field input {
           width: 100%;
-          background: rgba(255,255,255,0.03);
-          border: 1px solid rgba(180,140,60,0.2);
-          color: #f0e6cc;
+          background: rgba(255,255,255,0.7);
+          border: 1px solid rgba(26,18,9,0.2);
+          color: #1a1209;
           font-family: 'Cormorant Garamond', serif;
-          font-size: 16px;
+          font-size: 17px;
           padding: 12px 16px;
           outline: none;
-          transition: border-color 0.3s, background 0.3s;
+          transition: border-color 0.2s;
         }
 
         .field input:focus {
-          border-color: rgba(180,140,60,0.6);
-          background: rgba(180,140,60,0.05);
+          border-color: #1a1209;
         }
 
         .field input::placeholder {
-          color: rgba(240,230,204,0.2);
+          color: rgba(26,18,9,0.25);
           font-style: italic;
         }
 
         .erro {
           color: #c0392b;
-          font-size: 13px;
+          font-size: 12px;
           letter-spacing: 1px;
-          margin-bottom: 16px;
+          margin-bottom: 14px;
           text-align: center;
         }
 
         .btn {
           width: 100%;
           padding: 14px;
-          background: linear-gradient(135deg, #b48c3c, #d4aa5a, #b48c3c);
-          background-size: 200% 100%;
+          background: #1a1209;
           border: none;
           cursor: pointer;
           font-family: 'Playfair Display', serif;
-          font-size: 13px;
+          font-size: 12px;
           font-weight: 600;
           letter-spacing: 4px;
           text-transform: uppercase;
-          color: #0a0a0a;
-          transition: background-position 0.4s, opacity 0.2s;
+          color: #f5ede3;
+          transition: background 0.2s;
           margin-top: 8px;
         }
 
-        .btn:hover:not(:disabled) {
-          background-position: 100% 0;
-        }
-
-        .btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
+        .btn:hover:not(:disabled) { background: #2e2010; }
+        .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
         .footer-line {
           text-align: center;
-          margin-top: 32px;
-          font-size: 11px;
+          margin-top: 28px;
+          font-size: 10px;
           letter-spacing: 2px;
-          color: rgba(180,140,60,0.3);
+          color: rgba(26,18,9,0.25);
           text-transform: uppercase;
+        }
+
+        @media (max-width: 440px) {
+          .card { padding: 36px 24px; }
+          .login-logo { height: 80px; }
+          .login-brand { font-size: 18px; letter-spacing: 4px; }
         }
       `}</style>
 
       <div className="login-root">
-        <div className="bg-texture" />
-        <div className="bg-lines" />
-
         <div className={`card ${shake ? "shake" : ""}`}>
-          <div className="corner corner-tl" />
-          <div className="corner corner-tr" />
-          <div className="corner corner-bl" />
-          <div className="corner corner-br" />
 
-          <div className="logo-area">
-            <div className="logo-divider">
-              <div className="logo-diamond" />
-            </div>
-            <div className="brand-name">Dom Navalha</div>
-            <div className="brand-sub">Barber Club</div>
-            <div
-              className="logo-divider"
-              style={{ marginTop: 20, marginBottom: 0 }}
-            >
-              <div className="logo-diamond" />
-            </div>
+          {/* Logo + nome */}
+          <div className="login-logo-wrap">
+            <img
+              src="/logo.png"
+              alt="Dom Navalha"
+              className="login-logo"
+              onError={(e) => { e.target.style.display = "none"; }}
+            />
+            <div className="login-divider" />
+            <div className="login-brand">Dom <span>Navalha</span></div>
+            <div className="login-sub">Barber Club</div>
           </div>
 
-          <p className="section-label">Acesso restrito</p>
+          <p className="login-acesso">Acesso restrito</p>
 
           <div className="field">
             <label>Email</label>
@@ -294,6 +235,7 @@ export default function LoginPage() {
               placeholder="seu@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleLogin(); }}
             />
           </div>
 
@@ -301,9 +243,10 @@ export default function LoginPage() {
             <label>Senha</label>
             <input
               type="password"
-              placeholder="********"
+              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleLogin(); }}
             />
           </div>
 
