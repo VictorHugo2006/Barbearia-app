@@ -21,6 +21,9 @@ const MESES = [
 
 const PASSOS = ["Nome","Telefone","Serviço","Profissional","Data","Hora"];
 
+// ⚙️ Número do WhatsApp da barbearia (DDI 55 + DDD + número, sem símbolos)
+const WHATSAPP_BARBEARIA = "5500000000000"; // ← altere para o número da Dom Navalha
+
 export default function AgendarPage() {
   const hoje = new Date();
 
@@ -39,6 +42,7 @@ export default function AgendarPage() {
   const [salvando, setSalvando]         = useState(false);
   const [sucesso, setSucesso]           = useState(false);
   const [erro, setErro]                 = useState(null);
+  const [mostrarEquipe, setMostrarEquipe] = useState(false);
 
   useEffect(() => {
     supabase.from("barbeiros").select("*").order("nome")
@@ -70,7 +74,7 @@ export default function AgendarPage() {
     setDia(null);
   }
 
-  // ── Ao selecionar dia, avança e carrega horários ─
+  // ── Ao selecionar dia ────────────────────────────
   async function selecionarDia(d) {
     if (!d || ehPassado(d)) return;
     setDia(d);
@@ -122,9 +126,22 @@ export default function AgendarPage() {
     setSalvando(false);
   }
 
-  const dataFormatada = dia
-    ? `${String(dia).padStart(2,"0")} de ${MESES[mes]} de ${ano}`
-    : "";
+  // ── Selecionar barbeiro (modal da equipe) ────────
+  function escolherBarbeiro(b) {
+    setBarbeiro(b);
+    setMostrarEquipe(false);
+    setPasso(4);
+  }
+
+  // ── Link WhatsApp ────────────────────────────────
+  function linkWhatsApp() {
+    const msg =
+      `Seu agendamento foi confirmado com ${barbeiro?.nome}, ` +
+      `dia ${dataFormatada} às ${horario} ` +
+      `para o serviço de ${servico}. ` +
+      `Te esperamos na DOM NAVALHA.`;
+    return `https://wa.me/${WHATSAPP_BARBEARIA}?text=${encodeURIComponent(msg)}`;
+  }
 
   // ── Formatação de telefone ───────────────────────
   function formatarTelefone(val) {
@@ -133,6 +150,10 @@ export default function AgendarPage() {
     if (nums.length <= 7) return `(${nums.slice(0,2)}) ${nums.slice(2)}`;
     return `(${nums.slice(0,2)}) ${nums.slice(2,7)}-${nums.slice(7)}`;
   }
+
+  const dataFormatada = dia
+    ? `${String(dia).padStart(2,"0")} de ${MESES[mes]} de ${ano}`
+    : "";
 
   // ── Tela de sucesso ──────────────────────────────
   if (sucesso) return (
@@ -155,7 +176,9 @@ export default function AgendarPage() {
             <div className="ag-sucesso-linha"><span>Horário</span>{horario}</div>
           </div>
           <p className="ag-sucesso-obs">Apresente-se com 5 minutos de antecedência.</p>
-          <button className="ag-btn-primario" onClick={() => window.location.reload()}>
+          <p className="ag-sucesso-obs">Você receberá uma confirmação pelo WhatsApp em breve.</p>
+
+          <button className="ag-btn-primario ag-btn-outline" onClick={() => window.location.reload()}>
             Fazer outro agendamento
           </button>
         </div>
@@ -271,6 +294,12 @@ export default function AgendarPage() {
                   </button>
                 ))}
               </div>
+
+              {/* Não conheço ninguém */}
+              <button className="ag-btn-conhecer" onClick={() => setMostrarEquipe(true)}>
+                Não conheço ninguém — conheça a equipe →
+              </button>
+
               <button className="ag-btn-voltar" onClick={() => setPasso(2)}>← Voltar</button>
             </div>
           )}
@@ -366,6 +395,36 @@ export default function AgendarPage() {
 
         </main>
       </div>
+
+      {/* ── Modal: Conheça a equipe ─────────────────── */}
+      {mostrarEquipe && (
+        <div className="ag-overlay" onClick={() => setMostrarEquipe(false)}>
+          <div className="ag-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="ag-modal-topo">
+              <div>
+                <div className="ag-modal-titulo">Nossa equipe</div>
+                <div className="ag-modal-sub">Clique em um profissional para agendar</div>
+              </div>
+              <button className="ag-modal-fechar" onClick={() => setMostrarEquipe(false)}>✕</button>
+            </div>
+
+            <div className="ag-equipe-grid">
+              {barbeiros.map((b) => (
+                <div key={b.id} className="ag-equipe-card" onClick={() => escolherBarbeiro(b)}>
+                  {b.foto_url
+                    ? <img src={b.foto_url} alt={b.nome} className="ag-equipe-foto" />
+                    : <div className="ag-equipe-iniciais">
+                        {b.nome.split(" ").map((n) => n[0]).join("").slice(0,2).toUpperCase()}
+                      </div>
+                  }
+                  <div className="ag-equipe-nome">{b.nome}</div>
+                  <div className="ag-equipe-agendar">Agendar</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -503,6 +562,7 @@ const css = `
     border-radius: 50%;
     object-fit: cover;
     border: 1px solid rgba(26,18,9,0.15);
+    flex-shrink: 0;
   }
   .ag-prof-iniciais {
     width: 48px;
@@ -520,6 +580,26 @@ const css = `
   }
   .ag-opcao.ativo .ag-prof-iniciais { background: rgba(255,255,255,0.15); color: #f5ede3; border-color: rgba(255,255,255,0.3); }
   .ag-prof-nome { font-size: 18px; }
+
+  /* Botão "Não conheço ninguém" */
+  .ag-btn-conhecer {
+    background: none;
+    border: 1px dashed rgba(26,18,9,0.25);
+    color: #7a5920;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    padding: 14px 18px;
+    cursor: pointer;
+    text-align: left;
+    letter-spacing: 0.5px;
+    transition: all 0.15s;
+    width: 100%;
+  }
+  .ag-btn-conhecer:hover {
+    border-color: #7a5920;
+    background: rgba(122,89,32,0.04);
+  }
 
   /* Calendário */
   .ag-cal {
@@ -674,9 +754,20 @@ const css = `
     text-transform: uppercase;
     cursor: pointer;
     transition: background 0.2s;
+    text-decoration: none;
+    display: block;
+    text-align: center;
   }
   .ag-btn-primario:hover:not(:disabled) { background: #2e2010; }
   .ag-btn-primario:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .ag-btn-outline {
+    background: none;
+    border: 1px solid rgba(26,18,9,0.3);
+    color: #1a1209;
+  }
+  .ag-btn-outline:hover:not(:disabled) { background: rgba(26,18,9,0.06); }
+
   .ag-btn-voltar {
     background: none;
     border: none;
@@ -690,6 +781,28 @@ const css = `
     transition: color 0.15s;
   }
   .ag-btn-voltar:hover { color: #1a1209; }
+
+  /* Botão WhatsApp */
+  .ag-btn-whatsapp {
+    width: 100%;
+    padding: 16px;
+    background: #25D366;
+    border: none;
+    color: #fff;
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background 0.2s;
+  }
+  .ag-btn-whatsapp:hover { background: #1ebe5a; }
 
   .ag-erro {
     color: #c0392b;
@@ -757,11 +870,143 @@ const css = `
     text-align: center;
   }
 
+  /* ── Modal equipe ────────────────────────────── */
+  .ag-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,8,4,0.65);
+    z-index: 200;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .ag-modal {
+    background: #f5ede3;
+    width: 100%;
+    max-width: 540px;
+    max-height: 88vh;
+    overflow-y: auto;
+    padding: 28px 24px 40px;
+    border-top: 1px solid rgba(26,18,9,0.15);
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(40px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+
+  .ag-modal-topo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .ag-modal-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: #1a1209;
+    letter-spacing: 1px;
+  }
+  .ag-modal-sub {
+    font-size: 13px;
+    color: rgba(26,18,9,0.45);
+    letter-spacing: 1px;
+    margin-top: 4px;
+    font-style: italic;
+  }
+  .ag-modal-fechar {
+    background: none;
+    border: 1px solid rgba(26,18,9,0.2);
+    color: rgba(26,18,9,0.5);
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .ag-modal-fechar:hover { background: rgba(26,18,9,0.06); color: #1a1209; }
+
+  /* Grid de profissionais no modal */
+  .ag-equipe-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .ag-equipe-card {
+    background: #fff;
+    border: 1px solid rgba(26,18,9,0.12);
+    padding: 24px 16px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .ag-equipe-card:hover {
+    border-color: #1a1209;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(26,18,9,0.08);
+  }
+  .ag-equipe-foto {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid rgba(26,18,9,0.12);
+  }
+  .ag-equipe-iniciais {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 1px solid rgba(26,18,9,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: #1a1209;
+    background: rgba(245,237,227,0.8);
+  }
+  .ag-equipe-nome {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    color: #1a1209;
+    letter-spacing: 0.5px;
+  }
+  .ag-equipe-agendar {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(26,18,9,0.4);
+    border-top: 1px solid rgba(26,18,9,0.08);
+    padding-top: 10px;
+    width: 100%;
+    text-align: center;
+    transition: color 0.15s;
+  }
+  .ag-equipe-card:hover .ag-equipe-agendar { color: #1a1209; }
+
   @media (max-width: 480px) {
     .ag-main { padding: 28px 16px 48px; }
     .ag-titulo { font-size: 24px; }
     .ag-horarios { grid-template-columns: repeat(3, 1fr); }
     .ag-horario { padding: 13px 4px; font-size: 14px; }
     .ag-cal { padding: 14px; }
+    .ag-equipe-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .ag-equipe-foto, .ag-equipe-iniciais { width: 64px; height: 64px; }
+    .ag-equipe-iniciais { font-size: 20px; }
+    .ag-modal { padding: 24px 16px 36px; }
   }
 `;
