@@ -166,7 +166,14 @@ export default function AgendarPage() {
           <div className="ag-brand">Dom <span>Navalha</span></div>
         </header>
         <div className="ag-sucesso">
-          <div className="ag-sucesso-check">✓</div>
+          <div className="ag-check-wrap">
+            <svg className="ag-check-svg" viewBox="0 0 52 52">
+              <circle className="ag-check-circle" cx="26" cy="26" r="24" fill="none" strokeWidth="2"/>
+              <path  className="ag-check-path"   fill="none" strokeWidth="3"
+                strokeLinecap="round" strokeLinejoin="round"
+                d="M14 27 l8 8 l16-16"/>
+            </svg>
+          </div>
           <h2 className="ag-sucesso-titulo">Agendamento confirmado!</h2>
           <div className="ag-sucesso-info">
             <div className="ag-sucesso-linha"><span>Cliente</span>{nome}</div>
@@ -824,18 +831,47 @@ const css = `
     max-width: 480px;
     margin: 0 auto;
     width: 100%;
+    animation: fadeUp 0.5s ease forwards;
   }
-  .ag-sucesso-check {
-    width: 64px;
-    height: 64px;
-    border: 1px solid rgba(26,18,9,0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
-    color: #1a1209;
-    background: rgba(255,255,255,0.5);
+
+  /* Check animado */
+  .ag-check-wrap {
+    width: 82px;
+    height: 82px;
+    animation: checkPop 0.5s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
   }
+  .ag-check-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    filter: drop-shadow(0 0 10px rgba(34,197,94,0.4));
+  }
+  .ag-check-circle {
+    stroke: #22c55e;
+    stroke-dasharray: 151;
+    stroke-dashoffset: 151;
+    stroke-linecap: round;
+    animation: circleDraw 0.55s ease-out forwards;
+  }
+  .ag-check-path {
+    stroke: #22c55e;
+    stroke-dasharray: 36;
+    stroke-dashoffset: 36;
+    animation: checkDraw 0.3s ease-out 0.5s forwards;
+  }
+
+  @keyframes circleDraw {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes checkDraw {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes checkPop {
+    0%   { transform: scale(0.6); opacity: 0; }
+    70%  { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1);   opacity: 1; }
+  }
+
   .ag-sucesso-titulo {
     font-family: 'Playfair Display', serif;
     font-size: 26px;
