@@ -127,14 +127,21 @@ export default function RecepcaoPage() {
           .topbar-logo { height: 44px; }
           .topbar-brand-text { font-size: 15px; letter-spacing: 3px; }
           .topbar-nome { display: none; }
+          .topbar-badge { font-size: 8px; padding: 3px 6px; }
           .navbar { padding: 0 8px; }
-          .nav-item { padding: 12px 14px; font-size: 10px; letter-spacing: 1.5px; gap: 5px; }
-          .content { padding: 24px 16px; }
-          .barbeiro-selector { padding: 10px 16px; }
-          .card-agendamento { padding: 14px 16px; gap: 14px; }
-          .hora { font-size: 18px; min-width: 54px; }
+          .nav-item { padding: 12px 10px; font-size: 10px; letter-spacing: 1px; gap: 4px; }
+          .nav-item svg { display: none; }
+          .content { padding: 20px 16px; }
+          .barbeiro-selector { padding: 8px 16px; flex-wrap: wrap; gap: 8px; }
+          .barbeiro-selector-label { font-size: 9px; }
+          .barbeiro-btn { padding: 5px 12px; font-size: 12px; }
+          .card-agendamento { padding: 12px 14px; gap: 12px; }
+          .hora { font-size: 17px; min-width: 50px; }
           .ag-nome { font-size: 15px; }
-          .ag-status { font-size: 10px; padding: 3px 8px; }
+          .ag-servico { font-size: 11px; }
+          .ag-status { font-size: 10px; padding: 3px 8px; letter-spacing: 1px; }
+          .page-title { font-size: 22px; }
+          .page-subtitle { font-size: 11px; letter-spacing: 1px; margin-bottom: 20px; }
         }
       `}</style>
 

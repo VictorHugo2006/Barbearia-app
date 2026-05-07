@@ -27,7 +27,6 @@ export default function RecHoje({ barbeiros }) {
     carregar();
   }, []);
 
-  // Filtros
   const filtrados = todos.filter((ag) => {
     const hora = parseInt(ag.data_hora.slice(11, 13));
     const profOk = filtroProfissional === "todos" || ag.barbeiro === filtroProfissional;
@@ -43,20 +42,42 @@ export default function RecHoje({ barbeiros }) {
     return acc;
   }, {});
 
+  function toggleProfissional(nome) {
+    setFiltroProfissional((prev) => prev === nome ? "todos" : nome);
+  }
+
   return (
     <>
       <style>{`
         .rec-stats {
           display: flex;
-          gap: 12px;
-          margin-bottom: 28px;
+          gap: 10px;
+          margin-bottom: 24px;
           flex-wrap: wrap;
         }
         .rec-stat {
           border: 1px solid rgba(26,18,9,0.15);
           background: rgba(255,255,255,0.5);
-          padding: 14px 20px;
-          min-width: 120px;
+          padding: 14px 18px;
+          min-width: 100px;
+          cursor: default;
+          transition: all 0.15s;
+          flex: 1;
+        }
+        .rec-stat.clicavel {
+          cursor: pointer;
+        }
+        .rec-stat.clicavel:hover {
+          border-color: rgba(26,18,9,0.35);
+          background: rgba(255,255,255,0.8);
+        }
+        .rec-stat.ativo {
+          background: #1a1209;
+          border-color: #1a1209;
+        }
+        .rec-stat.ativo .rec-stat-num,
+        .rec-stat.ativo .rec-stat-label {
+          color: #f5ede3;
         }
         .rec-stat-num {
           font-family: 'Playfair Display', serif;
@@ -70,10 +91,11 @@ export default function RecHoje({ barbeiros }) {
           letter-spacing: 2px;
           text-transform: uppercase;
           color: rgba(26,18,9,0.45);
+          white-space: nowrap;
         }
         .rec-filtros {
           display: flex;
-          gap: 24px;
+          gap: 16px;
           margin-bottom: 24px;
           flex-wrap: wrap;
           align-items: center;
@@ -91,6 +113,7 @@ export default function RecHoje({ barbeiros }) {
           color: rgba(26,18,9,0.45);
           align-self: center;
           margin-right: 8px;
+          white-space: nowrap;
         }
         .rec-filtro-btn {
           padding: 7px 16px;
@@ -115,6 +138,14 @@ export default function RecHoje({ barbeiros }) {
           color: rgba(26,18,9,0.4);
           margin-bottom: 2px;
         }
+
+        @media (max-width: 600px) {
+          .rec-stat { padding: 10px 12px; min-width: 80px; }
+          .rec-stat-num { font-size: 22px; }
+          .rec-stat-label { font-size: 9px; letter-spacing: 1px; }
+          .rec-filtros { gap: 10px; }
+          .rec-filtro-btn { padding: 6px 10px; font-size: 12px; }
+        }
       `}</style>
 
       <h1 className="page-title">Hoje</h1>
@@ -123,39 +154,29 @@ export default function RecHoje({ barbeiros }) {
       </p>
       <div className="divider" />
 
-      {/* Estatísticas */}
+      {/* Cards de estatística — também funcionam como filtro */}
       <div className="rec-stats">
-        <div className="rec-stat">
+        <div
+          className={`rec-stat clicavel ${filtroProfissional === "todos" ? "ativo" : ""}`}
+          onClick={() => setFiltroProfissional("todos")}
+        >
           <div className="rec-stat-num">{todos.length}</div>
           <div className="rec-stat-label">Total</div>
         </div>
         {barbeiros.map((b) => (
-          <div key={b.nome} className="rec-stat">
+          <div
+            key={b.nome}
+            className={`rec-stat clicavel ${filtroProfissional === b.nome ? "ativo" : ""}`}
+            onClick={() => toggleProfissional(b.nome)}
+          >
             <div className="rec-stat-num">{totalPorBarbeiro[b.nome] || 0}</div>
             <div className="rec-stat-label">{b.nome}</div>
           </div>
         ))}
       </div>
 
-      {/* Filtros */}
+      {/* Filtro de turno */}
       <div className="rec-filtros">
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span className="rec-filtro-label">Profissional</span>
-          <div className="rec-filtro-grupo">
-            <button
-              className={`rec-filtro-btn ${filtroProfissional === "todos" ? "ativo" : ""}`}
-              onClick={() => setFiltroProfissional("todos")}
-            >Todos</button>
-            {barbeiros.map((b) => (
-              <button
-                key={b.nome}
-                className={`rec-filtro-btn ${filtroProfissional === b.nome ? "ativo" : ""}`}
-                onClick={() => setFiltroProfissional(b.nome)}
-              >{b.nome}</button>
-            ))}
-          </div>
-        </div>
-
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <span className="rec-filtro-label">Turno</span>
           <div className="rec-filtro-grupo">
