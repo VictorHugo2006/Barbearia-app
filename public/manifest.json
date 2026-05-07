@@ -1,0 +1,22 @@
+{
+  "name": "Dom Navalha",
+  "short_name": "Dom Navalha",
+  "description": "Dom Navalha Barber Club",
+  "start_url": "/login",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
