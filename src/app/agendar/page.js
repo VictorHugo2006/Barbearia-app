@@ -175,19 +175,6 @@ export default function AgendarPage() {
             </svg>
           </div>
           <h2 className="ag-sucesso-titulo">Agendamento confirmado!</h2>
-          <div className="ag-sucesso-info">
-            <div className="ag-sucesso-linha"><span>Cliente</span>{nome}</div>
-            <div className="ag-sucesso-linha"><span>Serviço</span>{servico}</div>
-            <div className="ag-sucesso-linha"><span>Profissional</span>{barbeiro.nome}</div>
-            <div className="ag-sucesso-linha"><span>Data</span>{dataFormatada}</div>
-            <div className="ag-sucesso-linha"><span>Horário</span>{horario}</div>
-          </div>
-          <p className="ag-sucesso-obs">Apresente-se com 5 minutos de antecedência.</p>
-          <p className="ag-sucesso-obs">Você receberá uma confirmação pelo WhatsApp em breve.</p>
-
-          <button className="ag-btn-primario ag-btn-outline" onClick={() => window.location.reload()}>
-            Fazer outro agendamento
-          </button>
         </div>
       </div>
     </>
@@ -826,11 +813,10 @@ const css = `
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    justify-content: center;
+    gap: 28px;
+    flex: 1;
     padding: 48px 24px;
-    max-width: 480px;
-    margin: 0 auto;
-    width: 100%;
     animation: fadeUp 0.5s ease forwards;
   }
 
