@@ -56,8 +56,8 @@ export default function LoginPage() {
         .card {
           width: 100%;
           max-width: 400px;
-          background: rgba(255,255,255,0.6);
-          border: 1px solid rgba(26,18,9,0.15);
+          background: #fff;
+          border: 1px solid rgba(26,18,9,0.2);
           padding: 48px 40px;
           animation: fadeUp 0.6s ease forwards;
         }
@@ -119,7 +119,7 @@ export default function LoginPage() {
           font-style: italic;
           font-size: 13px;
           letter-spacing: 3px;
-          color: rgba(26,18,9,0.45);
+          color: #5a3e1b;
         }
 
         /* Label de acesso */
@@ -127,7 +127,7 @@ export default function LoginPage() {
           font-size: 10px;
           letter-spacing: 3px;
           text-transform: uppercase;
-          color: rgba(26,18,9,0.4);
+          color: #5a3e1b;
           text-align: center;
           margin-bottom: 28px;
         }
@@ -142,14 +142,14 @@ export default function LoginPage() {
           font-size: 10px;
           letter-spacing: 2px;
           text-transform: uppercase;
-          color: rgba(26,18,9,0.5);
+          color: #1a1209;
           margin-bottom: 8px;
         }
 
         .field input {
           width: 100%;
-          background: rgba(255,255,255,0.7);
-          border: 1px solid rgba(26,18,9,0.2);
+          background: #fff;
+          border: 1px solid rgba(26,18,9,0.35);
           color: #1a1209;
           font-family: 'Cormorant Garamond', serif;
           font-size: 17px;
@@ -163,7 +163,7 @@ export default function LoginPage() {
         }
 
         .field input::placeholder {
-          color: rgba(26,18,9,0.25);
+          color: rgba(26,18,9,0.4);
           font-style: italic;
         }
 
@@ -199,7 +199,7 @@ export default function LoginPage() {
           margin-top: 28px;
           font-size: 10px;
           letter-spacing: 2px;
-          color: rgba(26,18,9,0.25);
+          color: rgba(26,18,9,0.5);
           text-transform: uppercase;
         }
 
