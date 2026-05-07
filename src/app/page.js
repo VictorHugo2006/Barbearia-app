@@ -6,8 +6,8 @@ import { supabase } from "@/lib/supabase";
 // ⚙️ Configurações — edite aqui
 const WHATSAPP_NUM   = "5547988803447";
 const INSTAGRAM_USER = "domnavalhagaspar";
-const ENDERECO_TEXTO = "Rua — altere para o endereço completo, Gaspar, SC"; // ← altere
-const MAPS_EMBED     = "https://maps.google.com/maps?q=dom+navalha+gaspar+sc&output=embed"; // ← cole o link embed do Google Maps
+const ENDERECO_TEXTO = "Rua Hercílio Fides Zimmermann, 55 — Gaspar/SC";
+const MAPS_EMBED     = "https://maps.google.com/maps?q=Rua+Hercilio+Fides+Zimmermann+55+Gaspar+SC&output=embed";
 
 const HORARIOS_FUNC = [
   { dia: "Seg", h: "09:00 às 19:00" },
@@ -101,9 +101,9 @@ export default function HomePage() {
   async function buscar() {
     if (tel.length < 14) return;
     setBuscando(true);
-    const hoje = new Date();
+    const agora = new Date();
     const hojeStr =
-      `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,"0")}-${String(hoje.getDate()).padStart(2,"0")}T00:00:00`;
+      `${agora.getFullYear()}-${String(agora.getMonth()+1).padStart(2,"0")}-${String(agora.getDate()).padStart(2,"0")}T${String(agora.getHours()).padStart(2,"0")}:${String(agora.getMinutes()).padStart(2,"0")}:00`;
     const { data } = await supabase
       .from("agendamentos")
       .select("*")
@@ -415,8 +415,9 @@ const css = `
     background: rgba(10,8,4,0.6);
     z-index: 100;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
+    padding: 20px;
     animation: overlayIn 0.2s ease;
   }
   @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
@@ -425,16 +426,17 @@ const css = `
     background: #fff;
     width: 100%;
     max-width: 680px;
-    max-height: 90vh;
+    max-height: 88vh;
     display: flex;
     flex-direction: column;
     border-top: 3px solid #1a1209;
-    animation: slideUp 0.3s ease;
+    border-radius: 2px;
+    animation: popIn 0.25s ease;
     overflow: hidden;
   }
-  @keyframes slideUp {
-    from { transform: translateY(30px); opacity: 0; }
-    to   { transform: translateY(0);    opacity: 1; }
+  @keyframes popIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to   { transform: scale(1);    opacity: 1; }
   }
 
   .hn-modal-top {
